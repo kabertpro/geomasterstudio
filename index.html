@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GEO-MASTER STUDIO - Juegos Educativos Personalizados</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --naranja: #FF6B35;
+            --negro: #0A0A0A;
+            --azul-marino: #0D1B2A;
+            --azul-oscuro: #1B263B;
+            --gris: #415A77;
+            --blanco: #E0E1DD;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--negro);
+            color: var(--blanco);
+            overflow-x: hidden;
+        }
+
+        /* LOADER */
+        #loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--azul-marino);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            transition: opacity 0.5s, visibility 0.5s;
+        }
+
+        #loader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loader-logo {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--naranja);
+            margin-bottom: 2rem;
+            animation: pulse 1.5s infinite;
+        }
+
+        .loader-bar {
+            width: 300px;
+            height: 4px;
+            background: var(--azul-oscuro);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .loader-progress {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, var(--naranja), #FFB703);
+            animation: loading 2s ease-in-out forwards;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes loading {
+            to { width: 100%; }
+        }
+
+        /* HEADER */
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1rem 0;
+            box-shadow: 0 2px 20px rgba(255, 107, 53, 0.3);
+        }
+
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--naranja);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--blanco);
+            text-decoration: none;
+            transition: color 0.3s;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover {
+            color: var(--naranja);
+        }
+
+        .menu-toggle {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            gap: 5px;
+        }
+
+        .menu-toggle span {
+            width: 25px;
+            height: 3px;
+            background: var(--naranja);
+            transition: 0.3s;
+        }
+
+        /* HERO */
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--azul-marino), var(--negro));
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(255, 107, 53, 0.2), transparent);
+            border-radius: 50%;
+            top: -250px;
+            right: -250px;
+            animation: float 6s infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(30px); }
+        }
+
+        .hero-content {
+            text-align: center;
+            z-index: 1;
+            padding: 0 2rem;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(90deg, var(--naranja), #FFB703);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: slideDown 1s;
+        }
+
+        .hero p {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            color: var(--gris);
+            animation: slideUp 1s;
+        }
+
+        .hero-tagline {
+            font-size: 1.8rem;
+            color: var(--naranja);
+            font-weight: bold;
+            margin-bottom: 2rem;
+        }
+
+        .cta-button {
+            background: var(--naranja);
+            color: white;
+            padding: 1rem 3rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            margin: 0.5rem;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(255, 107, 53, 0.5);
+        }
+
+        .cta-secondary {
+            background: transparent;
+            border: 2px solid var(--naranja);
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* GAMES SECTION */
+        .games-section {
+            max-width: 1200px;
+            margin: 5rem auto;
+            padding: 0 2rem;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--naranja);
+        }
+
+        .section-subtitle {
+            text-align: center;
+            font-size: 1.2rem;
+            margin-bottom: 3rem;
+            color: var(--gris);
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .game-card {
+            background: var(--azul-marino);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+
+        .game-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(255, 107, 53, 0.4);
+        }
+
+        .game-icon {
+            height: 200px;
+            background: linear-gradient(135deg, var(--azul-oscuro), var(--gris));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            position: relative;
+        }
+
+        .badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--naranja);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .game-info {
+            padding: 1.5rem;
+        }
+
+        .game-info h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--naranja);
+        }
+
+        .game-description {
+            color: var(--gris);
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .price-tag {
+            background: var(--azul-oscuro);
+            padding: 0.5rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .price {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--naranja);
+        }
+
+        .play-button {
+            width: 100%;
+            background: linear-gradient(90deg, var(--naranja), #FFB703);
+            color: white;
+            border: none;
+            padding: 0.8rem;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: opacity 0.3s;
+            margin-bottom: 0.5rem;
+        }
+
+        .play-button:hover {
+            opacity: 0.9;
+        }
+
+        /* PRICING SECTION */
+        .pricing-section {
+            background: var(--azul-marino);
+            padding: 5rem 2rem;
+            margin-top: 5rem;
+        }
+
+        .pricing-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .pricing-categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .pricing-card {
+            background: var(--azul-oscuro);
+            border-radius: 20px;
+            padding: 2rem;
+            transition: transform 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .pricing-card:hover {
+            transform: scale(1.05);
+            border-color: var(--naranja);
+        }
+
+        .pricing-card.featured {
+            border-color: var(--naranja);
+            box-shadow: 0 0 30px rgba(255, 107, 53, 0.3);
+        }
+
+        .pricing-card h3 {
+            color: var(--naranja);
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .pricing-card .icon {
+            text-align: center;
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .pricing-list {
+            list-style: none;
+            margin: 1rem 0;
+        }
+
+        .pricing-list li {
+            padding: 0.5rem 0;
+            color: var(--blanco);
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .pricing-list li strong {
+            color: var(--naranja);
+            margin-right: 0.5rem;
+            min-width: 80px;
+        }
+
+        .featured-tag {
+            background: var(--naranja);
+            color: white;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        /* ADVANTAGES */
+        .advantages-section {
+            max-width: 1200px;
+            margin: 5rem auto;
+            padding: 0 2rem;
+        }
+
+        .advantages-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .advantage-card {
+            background: var(--azul-marino);
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .advantage-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .advantage-card .icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .advantage-card h4 {
+            color: var(--naranja);
+            margin-bottom: 0.5rem;
+        }
+
+        /* CREDITS */
+        .credits-section {
+            background: var(--azul-oscuro);
+            padding: 5rem 2rem;
+            margin-top: 5rem;
+        }
+
+        .credits-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .team-member {
+            background: var(--azul-marino);
+            padding: 2rem;
+            border-radius: 15px;
+            transition: transform 0.3s;
+        }
+
+        .team-member:hover {
+            transform: scale(1.05);
+        }
+
+        .team-member .icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .team-member h4 {
+            color: var(--naranja);
+            font-size: 1.2rem;
+        }
+
+        /* FOOTER */
+        footer {
+            background: var(--negro);
+            padding: 2rem;
+            text-align: center;
+            color: var(--gris);
+        }
+
+        footer p {
+            margin: 0.5rem 0;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: flex;
+            }
+
+            .nav-links {
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background: var(--negro);
+                flex-direction: column;
+                padding: 2rem;
+                transform: translateX(-100%);
+                transition: transform 0.3s;
+            }
+
+            .nav-links.active {
+                transform: translateX(0);
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero p {
+                font-size: 1.2rem;
+            }
+
+            .hero-tagline {
+                font-size: 1.3rem;
+            }
+
+            .pricing-categories {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- LOADER -->
+    <div id="loader">
+        <div class="loader-logo">GEO-MASTER</div>
+        <div class="loader-bar">
+            <div class="loader-progress"></div>
+        </div>
+    </div>
+
+    <!-- HEADER -->
+    <header>
+        <nav>
+            <a href="#" class="logo">GEO-MASTER STUDIO</a>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#inicio">Inicio</a></li>
+                <li><a href="#juegos">Juegos</a></li>
+                <li><a href="#planes">Planes y Precios</a></li>
+                <li><a href="#ventajas">Ventajas</a></li>
+                <li><a href="#creditos">Créditos</a></li>
+            </ul>
+            <div class="menu-toggle" id="menuToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </nav>
+    </header>
+
+    <!-- HERO -->
+    <section class="hero" id="inicio">
+        <div class="hero-content">
+            <h1>GEO-MASTER STUDIO</h1>
+            <p>Juegos Educativos Personalizados para Matemáticas</p>
+            <div class="hero-tagline">🎮📐 "Domina las matemáticas jugando"</div>
+            <a href="#juegos" class="cta-button">Jugar Demos Gratis</a>
+            <a href="#planes" class="cta-button cta-secondary">Ver Planes</a>
+        </div>
+    </section>
+
+    <!-- GAMES -->
+    <section class="games-section" id="juegos">
+        <h2 class="section-title">🎁 Demos Gratuitas Disponibles</h2>
+        <p class="section-subtitle">Juega directamente en tu navegador - Sin instalación - Sin registro</p>
+        
+        <div class="games-grid">
+            <!-- Snake -->
+            <div class="game-card">
+                <div class="game-icon">
+                    🐍
+                    <span class="badge">DEMO GRATIS</span>
+                </div>
+                <div class="game-info">
+                    <h3>Planar Snake</h3>
+                    <p class="game-description">Secuencias y lógica matemática en el plano cartesiano</p>
+                    <div class="price-tag">
+                        <div class="price">Desde Bs. 5</div>
+                    </div>
+                    <button class="play-button" onclick="window.open('https://kabertpro.github.io/planarsnake/', '_blank')">🎮 Jugar Demo Gratis</button>
+                </div>
+            </div>
+
+            <!-- Laberinto -->
+            <div class="game-card">
+                <div class="game-icon">
+                    🗺️
+                    <span class="badge">DEMO GRATIS</span>
+                </div>
+                <div class="game-info">
+                    <h3>Laberinto Kids</h3>
+                    <p class="game-description">Nivel inicial - Orientación espacial y coordenadas básicas</p>
+                    <div class="price-tag">
+                        <div class="price">Desde Bs. 5</div>
+                    </div>
+                    <button class="play-button" onclick="window.open('https://kabertpro.github.io/laberinto/', '_blank')">🎮 Jugar Demo Gratis</button>
+                </div>
+            </div>
+
+            <!-- Bomberman -->
+            <div class="game-card">
+                <div class="game-icon">
+                    💣
+                    <span class="badge">DEMO GRATIS</span>
+                </div>
+                <div class="game-info">
+                    <h3>Bomberman</h3>
+                    <p class="game-description">Geometría espacial y estrategia matemática</p>
+                    <div class="price-tag">
+                        <div class="price">Desde Bs. 5</div>
+                    </div>
+                    <button class="play-button" onclick="window.open('https://kabertpro.github.io/bomberman/', '_blank')">🎮 Jugar Demo Gratis</button>
+                </div>
+            </div>
+
+            <!-- Pacman -->
+            <div class="game-card">
+                <div class="game-icon">
+                    👻
+                    <span class="badge">DEMO GRATIS</span>
+                </div>
+                <div class="game-info">
+                    <h3>Pacman</h3>
+                    <p class="game-description">Coordenadas cartesianas y estrategia de movimiento</p>
+                    <div class="price-tag">
+                        <div class="price">Desde Bs. 5</div>
+                    </div>
+                    <button class="play-button" onclick="window.open('https://kabertpro.github.io/pacmanV5/', '_blank')">🎮 Jugar Demo Gratis</button>
+                </div>
+            </div>
+
+            <!-- Laberinto Dinámico -->
+            <div class="game-card">
+                <div class="game-icon">
+                    🧩
+                    <span class="badge">DEMO GRATIS</span>
+                </div>
+                <div class="game-info">
+                    <h3>Laberinto Cartesiano</h3>
+                    <p class="game-description">Geometría analítica y resolución de problemas</p>
+                    <div class="price-tag">
+                        <div class="price">Desde Bs. 5</div>
+                    </div>
+                    <button class="play-button" onclick="window.open('https://kabertpro.github.io/laberintodinamico/', '_blank')">🎮 Jugar Demo Gratis</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PRICING -->
+    <section class="pricing-section" id="planes">
+        <div class="pricing-container">
+            <h2 class="section-title">Planes y Precios</h2>
+            <p class="section-subtitle">Opciones flexibles para estudiantes, profesores e instituciones</p>
+
+            <div class="pricing-categories">
+                <!-- Usuarios Individuales -->
+                <div class="pricing-card featured">
+                    <span class="featured-tag">👤 MÁS POPULAR</span>
+                    <div class="icon">🎓</div>
+                    <h3>Usuarios Individuales</h3>
+                    <p style="color: var(--gris); text-align: center; margin-bottom: 1rem;">Ideal para estudiantes</p>
+                    <ul class="pricing-list">
+                        <li><strong>Bs. 5</strong> Acceso individual por juego</li>
+                        <li><strong>Bs. 12</strong> Pack 3 juegos (ahorro Bs. 3)</li>
+                        <li><strong>Bs. 20</strong> Pack 5 juegos completo (ahorro Bs. 5)</li>
+                        <li><strong>Bs. 15/mes</strong> Acceso mensual ilimitado</li>
+                    </ul>
+                </div>
+
+                <!-- Licencias Institucionales -->
+                <div class="pricing-card">
+                    <div class="icon">🏫</div>
+                    <h3>Licencias Institucionales</h3>
+                    <p style="color: var(--gris); text-align: center; margin-bottom: 1rem;">Para colegios y centros educativos</p>
+                    <ul class="pricing-list">
+                        <li><strong>Bs. 300</strong> Básica (1 juego, 1 año)</li>
+                        <li><strong>Bs. 900</strong> Premium (5 juegos, 1 año)</li>
+                        <li><strong>Bs. 1,500</strong> Completa (todos + actualizaciones/año)</li>
+                    </ul>
+                </div>
+
+                <!-- Suscripciones Escolares -->
+                <div class="pricing-card">
+                    <div class="icon">📚</div>
+                    <h3>Suscripciones Escolares</h3>
+                    <p style="color: var(--gris); text-align: center; margin-bottom: 1rem;">Acceso para grupos y aulas</p>
+                    <ul class="pricing-list">
+                        <li><strong>Bs. 120/mes</strong> Mensual por aula (hasta 30 estudiantes)</li>
+                        <li><strong>Bs. 1,800</strong> Semestral colegio (uso ilimitado)</li>
+                        <li><strong>Bs. 3,000</strong> Anual colegio (acceso total + soporte)</li>
+                    </ul>
+                </div>
+
+                <!-- Desarrollo Personalizado -->
+                <div class="pricing-card">
+                    <div class="icon">🛠️</div>
+                    <h3>Desarrollo Personalizado</h3>
+                    <p style="color: var(--gris); text-align: center; margin-bottom: 1rem;">Juegos a medida</p>
+                    <ul class="pricing-list">
+                        <li><strong>Bs. 5,000-10,000</strong> Videojuego a medida</li>
+                        <li><strong>Bs. 2,000</strong> Adaptación de juego existente</li>
+                        <li><strong>Bs. 1,200</strong> Módulo educativo personalizado</li>
+                    </ul>
+                </div>
+
+                <!-- Talleres -->
+                <div class="pricing-card">
+                    <div class="icon">👨‍🏫</div>
+                    <h3>Talleres y Capacitación</h3>
+                    <p style="color: var(--gris); text-align: center; margin-bottom: 1rem;">Formación docente y estudiantes</p>
+                    <ul class="pricing-list">
+                        <li><strong>Bs. 600</strong> Taller docente (8 horas)</li>
+                        <li><strong>Bs. 400</strong> Curso estudiantes (12 horas/grupo)</li>
+                        <li><strong>Bs. 300/hora</strong> Consultoría institucional</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ADVANTAGES -->
+    <section class="advantages-section" id="ventajas">
+        <h2 class="section-title">Ventajas Competitivas</h2>
+        <div class="advantages-grid">
+            <div class="advantage-card">
+                <div class="icon">🌐</div>
+                <h4>Cero Instalación</h4>
+                <p>Tecnología web - Juega directamente en el navegador</p>
+            </div>
+            <div class="advantage-card">
+                <div class="icon">🎁</div>
+                <h4>Demos Gratuitas</h4>
+                <p>Prueba ilimitada antes de comprar</p>
+            </div>
+            <div class="advantage-card">
+                <div class="icon">💰</div>
+                <h4>Precios Accesibles</h4>
+                <p>Desde Bs. 5 - Adaptado a Bolivia</p>
+            </div>
+            <div class="advantage-card">
+                <div class="icon">📐</div>
+                <h4>Alineado al Currículo</h4>
+                <p>Según currículo nacional boliviano</p>
+            </div>
+            <div class="advantage-card">
+                <div class="icon">🔄</div>
+                <h4>Actualizaciones</h4>
+                <p>Mejoras constantes incluidas</p>
+            </div>
+            <div class="advantage-card">
+                <div class="icon">🛡️</div>
+                <h4>Soporte Técnico</h4>
+                <p>Asistencia incluida en todos los planes</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CREDITS -->
+    <section class="credits-section" id="creditos">
+        <div class="credits-content">
+            <h2 class="section-title">Nuestro Equipo de Desarrollo</h2>
+            <div class="team-grid">
+                <div class="team-member">
+                    <div class="icon">👩‍💻</div>
+                    <h4>Cielo Imaña</h4>
+                    <p>Desarrolladora</p>
+                </div>
+                <div class="team-member">
+                    <div class="icon">👨‍💻</div>
+                    <h4>Luan Ortíz</h4>
+                    <p>Desarrollador</p>
+                </div>
+                <div class="team-member">
+                    <div class="icon">👨‍💻</div>
+                    <h4>Jair Coyo</h4>
+                    <p>Desarrollador</p>
+                </div>
+                <div class="team-member">
+                    <div class="icon">👨‍💻</div>
+                    <h4>Eithan Herrera</h4>
+                    <p>Desarrollador</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <p>&copy; 2024 GEO-MASTER STUDIO - Todos los derechos reservados</p>
+        <p>🎮📐 "Domina las matemáticas jugando"</p>
+        <p>Juegos educativos personalizados - 100% boliviano</p>
+    </footer>
+
+    <script>
+        // Loader
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('loader').classList.add('hidden');
+            }, 2000);
+        });
+
+        // Menu Toggle
+        const menuToggle = document.getElementById('menuToggle');
+        const navLinks = document.getElementById('navLinks');
+
+        menuToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+
+        // Smooth Scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    navLinks.classList.remove('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
